@@ -13,32 +13,38 @@ interface CharacterDetailProps {
 
 export function CharacterDetail({ character }: CharacterDetailProps) {
   return (
-    <div className="max-w-4xl mx-auto bg-white rounded-2xl shadow-xl overflow-hidden border border-gray-200">
-      <div className="lg:flex">
-        {/* Imagen del personaje */}
-        <div className="lg:w-1/2">
-          <div className="relative h-80 lg:h-full min-h-[400px]">
-            <Image
-              src={character.image}
-              alt={character.name}
-              fill
-              className="object-cover object-center"
-              priority
-              sizes="(max-width: 1024px) 100vw, 50vw"
-            />
+    <div className="max-w-6xl mx-auto space-y-6">
+      {/* Tarjeta de la imagen */}
+      <div className="bg-white rounded-2xl shadow-xl overflow-hidden border border-gray-200">
+        <div className="p-6">
+          <h1 className="text-3xl font-bold text-slate-800 mb-2 text-center">
+            {character.name}
+          </h1>
+          <p className="text-lg text-slate-600 font-medium text-center mb-6">
+            ID: #{character.id}
+          </p>
+          
+          <div className="flex justify-center">
+            <div className="relative w-80 h-80 rounded-2xl overflow-hidden shadow-lg border-4 border-gradient-to-r from-blue-400 to-purple-500">
+              <Image
+                src={character.image}
+                alt={character.name}
+                fill
+                className="object-contain"
+                priority
+                sizes="320px"
+              />
+            </div>
           </div>
         </div>
+      </div>
 
-        {/* Información del personaje */}
-        <div className="lg:w-1/2 p-6 lg:p-8 space-y-6">
-          <div>
-            <h1 className="text-3xl font-bold text-slate-800 mb-2">
-              {character.name}
-            </h1>
-            <p className="text-lg text-slate-600 font-medium">
-              ID: #{character.id}
-            </p>
-          </div>
+      {/* Tarjeta de atributos */}
+      <div className="bg-white rounded-2xl shadow-xl overflow-hidden border border-gray-200">
+        <div className="p-6 lg:p-8 space-y-6">
+          <h2 className="text-2xl font-bold text-slate-800 mb-4 text-center">
+            Información del Personaje
+          </h2>
 
           <div className="grid gap-4">
             <div className="flex items-center gap-3 p-3 bg-gradient-to-r from-green-50 to-emerald-50 rounded-lg border border-green-200">
@@ -78,14 +84,18 @@ export function CharacterDetail({ character }: CharacterDetailProps) {
               <span className="text-lg font-semibold text-violet-700">{formatEpisodeCount(character.episode)}</span>
             </div>
           </div>
+        </div>
+      </div>
 
-          {/* Lista de episodios */}
+      {/* Tarjeta de episodios */}
+      <div className="bg-white rounded-2xl shadow-xl overflow-hidden border border-gray-200">
+        <div className="p-6 lg:p-8 space-y-6">
           <div className="bg-gradient-to-r from-slate-50 to-gray-50 rounded-lg border border-slate-200 p-4">
-            <h3 className="font-bold text-slate-800 mb-3 text-lg flex items-center">
-              📺 Apariciones:
+            <h3 className="font-bold text-slate-800 mb-3 text-lg flex items-center justify-center">
+              📺 Apariciones en Episodios
             </h3>
-            <div className="flex flex-wrap gap-2 max-h-32 overflow-y-auto">
-              {character.episode.slice(0, 15).map((episodeUrl) => {
+            <div className="flex flex-wrap gap-2 justify-center max-h-40 overflow-y-auto">
+              {character.episode.slice(0, 20).map((episodeUrl) => {
                 const episodeId = extractEpisodeId(episodeUrl);
                 return (
                   <span
@@ -96,19 +106,19 @@ export function CharacterDetail({ character }: CharacterDetailProps) {
                   </span>
                 );
               })}
-              {character.episode.length > 15 && (
+              {character.episode.length > 20 && (
                 <span className="px-3 py-1 bg-gradient-to-r from-gray-500 to-gray-600 text-white rounded-full text-xs font-bold shadow-md">
-                  +{character.episode.length - 15} más
+                  +{character.episode.length - 20} más
                 </span>
               )}
             </div>
           </div>
 
-          <div className="pt-4 border-t border-slate-200">
-            <p className="text-xs text-slate-500 font-medium">
-              📅 Creado: {new Date(character.created).toLocaleDateString('es-ES', {
+          <div className="pt-4 border-t border-slate-200 text-center">
+            <p className="text-sm text-slate-600 font-medium">
+              📅 Personaje creado el: {new Date(character.created).toLocaleDateString('es-ES', {
                 year: 'numeric',
-                month: 'short',
+                month: 'long',
                 day: 'numeric'
               })}
             </p>

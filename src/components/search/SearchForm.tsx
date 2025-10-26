@@ -67,10 +67,10 @@ export function SearchForm({ onSearch, loading = false }: SearchFormProps) {
         {hasActiveFilters && (
           <button
             onClick={clearFilters}
-            className="text-sm text-slate-500 hover:text-purple-600 underline transition-colors px-3 py-1 rounded-full hover:bg-purple-50"
+            className="text-sm bg-gradient-to-r from-red-500 to-pink-500 text-white font-semibold px-4 py-2 rounded-full hover:from-red-600 hover:to-pink-600 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105"
             disabled={loading}
           >
-            Limpiar filtros
+            ✨ Limpiar filtros
           </button>
         )}
       </div>
@@ -86,8 +86,8 @@ export function SearchForm({ onSearch, loading = false }: SearchFormProps) {
             type="text"
             value={filters.name}
             onChange={(e) => handleInputChange('name', e.target.value)}
-            placeholder="Ej: Rick, Morty..."
-            className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-300 bg-white/70 backdrop-blur-sm"
+            placeholder="🔍 Ej: Rick, Morty, Summer..."
+            className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-300 bg-white/70 backdrop-blur-sm placeholder-slate-500"
             disabled={loading}
           />
         </div>
@@ -115,14 +115,14 @@ export function SearchForm({ onSearch, loading = false }: SearchFormProps) {
 
         {/* Filtro por género */}
         <div>
-          <label htmlFor="gender" className="block text-sm font-medium text-gray-700 mb-1">
+          <label htmlFor="gender" className="block text-sm font-semibold text-slate-700 mb-2">
             Género
           </label>
           <select
             id="gender"
             value={filters.gender || ''}
             onChange={(e) => handleInputChange('gender', e.target.value)}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"
+            className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-pink-500 focus:border-transparent transition-all duration-300 bg-white/70 backdrop-blur-sm"
             disabled={loading}
           >
             <option value="">Todos los géneros</option>
@@ -138,7 +138,7 @@ export function SearchForm({ onSearch, loading = false }: SearchFormProps) {
 
         {/* Búsqueda por especie */}
         <div>
-          <label htmlFor="species" className="block text-sm font-medium text-gray-700 mb-1">
+          <label htmlFor="species" className="block text-sm font-semibold text-slate-700 mb-2">
             Especie
           </label>
           <input
@@ -146,15 +146,15 @@ export function SearchForm({ onSearch, loading = false }: SearchFormProps) {
             type="text"
             value={filters.species}
             onChange={(e) => handleInputChange('species', e.target.value)}
-            placeholder="Ej: Human, Alien..."
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"
+            placeholder="🧬 Ej: Human, Alien, Robot..."
+            className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-300 bg-white/70 backdrop-blur-sm placeholder-slate-500"
             disabled={loading}
           />
         </div>
 
         {/* Búsqueda por tipo */}
         <div>
-          <label htmlFor="type" className="block text-sm font-medium text-gray-700 mb-1">
+          <label htmlFor="type" className="block text-sm font-semibold text-slate-700 mb-2">
             Tipo
           </label>
           <input
@@ -162,17 +162,22 @@ export function SearchForm({ onSearch, loading = false }: SearchFormProps) {
             type="text"
             value={filters.type}
             onChange={(e) => handleInputChange('type', e.target.value)}
-            placeholder="Ej: Genetic experiment..."
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"
+            placeholder="🧪 Ej: Genetic experiment..."
+            className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all duration-300 bg-white/70 backdrop-blur-sm placeholder-slate-500"
             disabled={loading}
           />
         </div>
       </div>
 
       {loading && (
-        <div className="flex items-center justify-center py-4">
-          <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-500"></div>
-          <span className="ml-2 text-gray-600">Buscando...</span>
+        <div className="flex items-center justify-center py-6 bg-gradient-to-r from-blue-50 to-purple-50 rounded-xl border border-blue-200">
+          <div className="flex items-center space-x-3">
+            <div className="animate-spin rounded-full h-8 w-8 border-4 border-blue-200 border-t-blue-600"></div>
+            <div className="flex flex-col">
+              <span className="text-blue-700 font-semibold text-lg">Buscando personajes...</span>
+              <span className="text-blue-500 text-sm">Explorando el multiverso 🌌</span>
+            </div>
+          </div>
         </div>
       )}
     </div>

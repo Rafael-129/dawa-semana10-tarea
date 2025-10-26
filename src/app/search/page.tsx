@@ -56,19 +56,19 @@ export default function SearchPage() {
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
       {/* Header */}
       <div className="text-center mb-8">
-        <h1 className="text-4xl font-bold text-gray-900 mb-4">
+        <h1 className="text-4xl font-bold bg-gradient-to-r from-cyan-500 via-purple-500 to-pink-500 bg-clip-text text-transparent mb-4">
           🔍 Buscar Personajes
         </h1>
-        <p className="text-xl text-gray-600 max-w-3xl mx-auto mb-6">
+        <p className="text-xl text-slate-700 max-w-3xl mx-auto mb-6">
           Encuentra personajes específicos usando filtros avanzados. 
-          Esta página utiliza <strong>Client-Side Rendering (CSR)</strong> para 
+          Esta página utiliza <strong className="text-purple-600">Client-Side Rendering (CSR)</strong> para 
           búsquedas en tiempo real.
         </p>
-        <div className="flex justify-center space-x-4 text-sm text-gray-500">
-          <span className="bg-yellow-100 text-yellow-800 px-3 py-1 rounded-full">
+        <div className="flex justify-center space-x-4 text-sm">
+          <span className="bg-gradient-to-r from-yellow-500 to-orange-500 text-white px-4 py-2 rounded-full font-medium shadow-lg">
             🔄 CSR - Tiempo Real
           </span>
-          <span className="bg-purple-100 text-purple-800 px-3 py-1 rounded-full">
+          <span className="bg-gradient-to-r from-purple-500 to-pink-500 text-white px-4 py-2 rounded-full font-medium shadow-lg">
             🎯 Filtros Avanzados
           </span>
         </div>

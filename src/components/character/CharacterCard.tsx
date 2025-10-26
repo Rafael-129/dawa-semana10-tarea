@@ -16,14 +16,14 @@ export function CharacterCard({ character, lazy = true, priority = false }: Char
   return (
     <Link 
       href={`/character/${character.id}`}
-      className="group block bg-white rounded-xl shadow-md overflow-hidden hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1"
+      className="group block bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 border border-gray-100 hover:border-purple-200"
     >
-      <div className="relative aspect-square overflow-hidden bg-gray-100">
+      <div className="relative aspect-square overflow-hidden bg-gradient-to-br from-slate-100 to-gray-200">
         <Image
           src={character.image}
           alt={character.name}
           fill
-          className="object-cover group-hover:scale-105 transition-transform duration-300"
+          className="object-cover group-hover:scale-110 transition-transform duration-500"
           placeholder="blur"
           blurDataURL={generateImagePlaceholder()}
           priority={priority}
@@ -33,35 +33,38 @@ export function CharacterCard({ character, lazy = true, priority = false }: Char
         
         {/* Status indicator */}
         <div className="absolute top-3 right-3">
-          <div className={`w-3 h-3 rounded-full ${getStatusColor(character.status)} ring-2 ring-white`} />
+          <div className={`w-4 h-4 rounded-full ${getStatusColor(character.status)} ring-3 ring-white shadow-lg`} />
         </div>
+        
+        {/* Gradient overlay */}
+        <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
       </div>
 
-      <div className="p-4 space-y-2">
-        <h3 className="font-bold text-lg text-gray-900 group-hover:text-blue-600 transition-colors line-clamp-1">
+      <div className="p-6 space-y-3">
+        <h3 className="font-bold text-xl text-slate-800 group-hover:text-purple-600 transition-colors line-clamp-1 mb-3">
           {character.name}
         </h3>
         
-        <div className="space-y-1 text-sm text-gray-600">
-          <p className="flex items-center gap-2">
-            <span className="font-medium">Estado:</span>
-            {formatCharacterStatus(character.status)}
-          </p>
+        <div className="space-y-2 text-sm">
+          <div className="flex items-center gap-3 p-2 bg-slate-50 rounded-lg group-hover:bg-purple-50 transition-colors">
+            <span className="font-semibold text-slate-600 min-w-[60px]">Estado:</span>
+            <span className="text-slate-800">{formatCharacterStatus(character.status)}</span>
+          </div>
           
-          <p className="flex items-center gap-2">
-            <span className="font-medium">Especie:</span>
-            {character.species}
-          </p>
+          <div className="flex items-center gap-3 p-2 bg-slate-50 rounded-lg group-hover:bg-blue-50 transition-colors">
+            <span className="font-semibold text-slate-600 min-w-[60px]">Especie:</span>
+            <span className="text-slate-800">{character.species}</span>
+          </div>
           
-          <p className="flex items-center gap-2">
-            <span className="font-medium">Género:</span>
-            {formatCharacterGender(character.gender)}
-          </p>
+          <div className="flex items-center gap-3 p-2 bg-slate-50 rounded-lg group-hover:bg-emerald-50 transition-colors">
+            <span className="font-semibold text-slate-600 min-w-[60px]">Género:</span>
+            <span className="text-slate-800">{formatCharacterGender(character.gender)}</span>
+          </div>
           
-          <p className="flex items-center gap-2">
-            <span className="font-medium">Origen:</span>
-            <span className="line-clamp-1">{character.origin.name}</span>
-          </p>
+          <div className="flex items-start gap-3 p-2 bg-slate-50 rounded-lg group-hover:bg-cyan-50 transition-colors">
+            <span className="font-semibold text-slate-600 min-w-[60px]">Origen:</span>
+            <span className="line-clamp-1 text-slate-800">{character.origin.name}</span>
+          </div>
         </div>
       </div>
     </Link>

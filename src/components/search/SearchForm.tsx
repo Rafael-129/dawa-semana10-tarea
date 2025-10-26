@@ -59,15 +59,15 @@ export function SearchForm({ onSearch, loading = false }: SearchFormProps) {
   );
 
   return (
-    <div className="bg-white rounded-xl shadow-md p-6 space-y-4">
+    <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl p-8 space-y-6 border border-gray-200">
       <div className="flex items-center justify-between">
-        <h2 className="text-xl font-bold text-gray-900">
+        <h2 className="text-2xl font-bold bg-gradient-to-r from-slate-800 to-slate-600 bg-clip-text text-transparent flex items-center">
           🔍 Buscar Personajes
         </h2>
         {hasActiveFilters && (
           <button
             onClick={clearFilters}
-            className="text-sm text-gray-500 hover:text-gray-700 underline"
+            className="text-sm text-slate-500 hover:text-purple-600 underline transition-colors px-3 py-1 rounded-full hover:bg-purple-50"
             disabled={loading}
           >
             Limpiar filtros
@@ -78,7 +78,7 @@ export function SearchForm({ onSearch, loading = false }: SearchFormProps) {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {/* Búsqueda por nombre */}
         <div>
-          <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">
+          <label htmlFor="name" className="block text-sm font-semibold text-slate-700 mb-2">
             Nombre
           </label>
           <input
@@ -87,21 +87,21 @@ export function SearchForm({ onSearch, loading = false }: SearchFormProps) {
             value={filters.name}
             onChange={(e) => handleInputChange('name', e.target.value)}
             placeholder="Ej: Rick, Morty..."
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"
+            className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-300 bg-white/70 backdrop-blur-sm"
             disabled={loading}
           />
         </div>
 
         {/* Filtro por estado */}
         <div>
-          <label htmlFor="status" className="block text-sm font-medium text-gray-700 mb-1">
+          <label htmlFor="status" className="block text-sm font-semibold text-slate-700 mb-2">
             Estado
           </label>
           <select
             id="status"
             value={filters.status || ''}
             onChange={(e) => handleInputChange('status', e.target.value)}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"
+            className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300 bg-white/70 backdrop-blur-sm"
             disabled={loading}
           >
             <option value="">Todos los estados</option>

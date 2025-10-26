@@ -20,13 +20,34 @@ export default function SearchPage() {
   const [lastSearchFilters, setLastSearchFilters] = useState<SearchFilters>({});
 
   const handleSearch = useCallback(async (filters: SearchFilters, page: number = 1) => {
+    console.log('🎯 HandleSearch llamado con:', filters, 'página:', page);
     setLoading(true);
     setError(null);
 
     try {
+      // Verificar si hay filtros activos antes de realizar la búsqueda
+      const hasActiveFilters = Object.values(filters).some(value => 
+        value !== undefined && value !== ''
+      );
+
+      console.log('🔎 Filtros activos:', hasActiveFilters);
+
+      if (!hasActiveFilters) {
+        // Si no hay filtros, limpiar resultados
+        console.log('🧹 Limpiando resultados - sin filtros activos');
+        setCharacters([]);
+        setPagination({ currentPage: 1, totalPages: 1, totalResults: 0 });
+        setLastSearchFilters({});
+        setLoading(false);
+        return;
+      }
+
       const searchFilters = { ...filters, page };
+      console.log('📡 Realizando búsqueda con:', searchFilters);
+      
       const response: CharacterResponse = await rickAndMortyService.searchCharacters(searchFilters);
       
+      console.log('🎉 Respuesta recibida:', response);
       setCharacters(response.results);
       setPagination({
         currentPage: page,
@@ -35,11 +56,12 @@ export default function SearchPage() {
       });
       setLastSearchFilters(filters);
     } catch (err) {
-      console.error('Search error:', err);
+      console.error('💥 Search error:', err);
       setError(err instanceof Error ? err.message : 'Error en la búsqueda');
       setCharacters([]);
       setPagination({ currentPage: 1, totalPages: 1, totalResults: 0 });
     } finally {
+      console.log('🏁 Finalizando búsqueda, setLoading(false)');
       setLoading(false);
     }
   }, []);

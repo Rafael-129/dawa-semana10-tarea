@@ -1,9 +1,8 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { SearchFilters, CharacterStatus, CharacterGender } from '@/types';
 import { CHARACTER_STATUS, CHARACTER_GENDER } from '@/constants';
-import { debounce } from '@/utils';
 
 interface SearchFormProps {
   onSearch: (filters: SearchFilters) => void;
@@ -19,21 +18,40 @@ export function SearchForm({ onSearch, loading = false }: SearchFormProps) {
     gender: undefined,
   });
 
-  // Debounce para búsqueda en tiempo real
-  const debouncedSearch = debounce((newFilters: SearchFilters) => {
-    onSearch(newFilters);
-  }, 300);
+  const debounceTimeout = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
+    console.log('🔄 SearchForm useEffect triggered, filtros:', filters);
+    
+    // Limpiar timeout anterior
+    if (debounceTimeout.current) {
+      clearTimeout(debounceTimeout.current);
+    }
+
     // Solo buscar si hay algún filtro activo
     const hasActiveFilters = Object.values(filters).some(value => 
       value !== undefined && value !== ''
     );
     
+    console.log('🎯 Filtros activos en SearchForm:', hasActiveFilters);
+    
     if (hasActiveFilters) {
-      debouncedSearch(filters);
+      console.log('⏰ Iniciando debounce de 300ms...');
+      debounceTimeout.current = setTimeout(() => {
+        console.log('🚀 Ejecutando onSearch después de debounce');
+        onSearch(filters);
+      }, 300);
+    } else {
+      console.log('🧹 No hay filtros activos, no buscar');
     }
-  }, [filters, debouncedSearch]);
+
+    // Cleanup
+    return () => {
+      if (debounceTimeout.current) {
+        clearTimeout(debounceTimeout.current);
+      }
+    };
+  }, [filters, onSearch]);
 
   const handleInputChange = (field: keyof SearchFilters, value: string) => {
     setFilters(prev => ({
@@ -42,7 +60,12 @@ export function SearchForm({ onSearch, loading = false }: SearchFormProps) {
     }));
   };
 
-  const clearFilters = () => {
+  const clearFilters = useCallback(() => {
+    // Limpiar timeout si existe
+    if (debounceTimeout.current) {
+      clearTimeout(debounceTimeout.current);
+    }
+    
     const emptyFilters: SearchFilters = {
       name: '',
       status: undefined,
@@ -51,8 +74,9 @@ export function SearchForm({ onSearch, loading = false }: SearchFormProps) {
       gender: undefined,
     };
     setFilters(emptyFilters);
+    // Llamar directamente onSearch con filtros vacíos para limpiar resultados
     onSearch(emptyFilters);
-  };
+  }, [onSearch]);
 
   const hasActiveFilters = Object.values(filters).some(value => 
     value !== undefined && value !== ''
@@ -87,7 +111,7 @@ export function SearchForm({ onSearch, loading = false }: SearchFormProps) {
             value={filters.name}
             onChange={(e) => handleInputChange('name', e.target.value)}
             placeholder="🔍 Ej: Rick, Morty, Summer..."
-            className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-300 bg-white/70 backdrop-blur-sm placeholder-slate-500"
+            className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-300 bg-white text-gray-900 placeholder-gray-500 shadow-sm"
             disabled={loading}
           />
         </div>
@@ -101,7 +125,7 @@ export function SearchForm({ onSearch, loading = false }: SearchFormProps) {
             id="status"
             value={filters.status || ''}
             onChange={(e) => handleInputChange('status', e.target.value)}
-            className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300 bg-white/70 backdrop-blur-sm"
+            className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300 bg-white text-gray-900 shadow-sm"
             disabled={loading}
           >
             <option value="">Todos los estados</option>
@@ -122,7 +146,7 @@ export function SearchForm({ onSearch, loading = false }: SearchFormProps) {
             id="gender"
             value={filters.gender || ''}
             onChange={(e) => handleInputChange('gender', e.target.value)}
-            className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-pink-500 focus:border-transparent transition-all duration-300 bg-white/70 backdrop-blur-sm"
+            className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-pink-500 focus:border-transparent transition-all duration-300 bg-white text-gray-900 shadow-sm"
             disabled={loading}
           >
             <option value="">Todos los géneros</option>
@@ -147,7 +171,7 @@ export function SearchForm({ onSearch, loading = false }: SearchFormProps) {
             value={filters.species}
             onChange={(e) => handleInputChange('species', e.target.value)}
             placeholder="🧬 Ej: Human, Alien, Robot..."
-            className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-300 bg-white/70 backdrop-blur-sm placeholder-slate-500"
+            className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-300 bg-white text-gray-900 placeholder-gray-500 shadow-sm"
             disabled={loading}
           />
         </div>
@@ -163,7 +187,7 @@ export function SearchForm({ onSearch, loading = false }: SearchFormProps) {
             value={filters.type}
             onChange={(e) => handleInputChange('type', e.target.value)}
             placeholder="🧪 Ej: Genetic experiment..."
-            className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all duration-300 bg-white/70 backdrop-blur-sm placeholder-slate-500"
+            className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all duration-300 bg-white text-gray-900 placeholder-gray-500 shadow-sm"
             disabled={loading}
           />
         </div>

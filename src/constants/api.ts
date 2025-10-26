@@ -4,7 +4,7 @@ export const API_BASE_URL = 'https://rickandmortyapi.com/api';
 export const API_ENDPOINTS = {
   CHARACTERS: `${API_BASE_URL}/character`,
   CHARACTER_BY_ID: (id: number | string) => `${API_BASE_URL}/character/${id}`,
-  CHARACTERS_SEARCH: `${API_BASE_URL}/character/`,
+  CHARACTERS_SEARCH: `${API_BASE_URL}/character`,
 } as const;
 
 // Configuración de cache para diferentes estrategias

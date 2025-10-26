@@ -6,29 +6,30 @@ import { CharacterDetail } from '@/components/character';
 import { generateCharacterMetadata } from '@/utils';
 import { StaticParams } from '@/types';
 
-// Configuración ISR - Revalidación cada 10 días
-export const revalidate = 60 * 60 * 24 * 10; // 10 días en segundos
-
-// Generar rutas estáticas para todos los personajes
+// Generar rutas estáticas para los personajes más populares
 export async function generateStaticParams(): Promise<StaticParams[]> {
   try {
-    const characterIds = await rickAndMortyService.getAllCharacterIds();
-    
-    // Limitar a los primeros 100 personajes para el build inicial
+    // Generar solo los primeros 10 personajes para el build inicial
     // Los demás se generarán bajo demanda con ISR
-    return characterIds.slice(0, 100).map((id) => ({
-      id: id.toString(),
+    return Array.from({ length: 10 }, (_, i) => ({
+      id: (i + 1).toString(),
     }));
   } catch (error) {
     console.error('Error generating static params:', error);
-    return [];
+    // Retornar al menos algunos parámetros básicos
+    return [
+      { id: '1' },
+      { id: '2' },
+      { id: '3' },
+    ];
   }
 }
 
 // Generar metadatos dinámicos
-export async function generateMetadata({ params }: { params: { id: string } }): Promise<Metadata> {
+export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {
   try {
-    const character = await rickAndMortyService.getCharacterById(params.id);
+    const { id } = await params;
+    const character = await rickAndMortyService.getCharacterById(id);
     return generateCharacterMetadata(character);
   } catch (error) {
     return {
@@ -38,9 +39,20 @@ export async function generateMetadata({ params }: { params: { id: string } }): 
   }
 }
 
-export default async function CharacterPage({ params }: { params: { id: string } }) {
+export default async function CharacterPage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
+  console.log('Loading character with ID:', id); // Debug log
+  
   try {
-    const character = await rickAndMortyService.getCharacterById(params.id);
+    // Validar que el ID sea un número válido
+    const characterId = parseInt(id);
+    if (isNaN(characterId) || characterId < 1) {
+      console.error('Invalid character ID:', id);
+      notFound();
+    }
+
+    const character = await rickAndMortyService.getCharacterById(characterId);
+    console.log('Character loaded successfully:', character.name); // Debug log
 
     return (
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -84,7 +96,7 @@ export default async function CharacterPage({ params }: { params: { id: string }
             </p>
             <p>
               <strong>Revalidación:</strong> Los datos se actualizan cada 10 días 
-              (<code className="bg-gray-100 px-2 py-1 rounded">revalidate: {revalidate}</code> segundos).
+              (<code className="bg-gray-100 px-2 py-1 rounded">revalidate: 864000</code> segundos).
             </p>
             <p>
               <strong>Fallback:</strong> Next.js genera automáticamente páginas para personajes 
@@ -111,7 +123,14 @@ export default async function CharacterPage({ params }: { params: { id: string }
       </div>
     );
   } catch (error) {
-    console.error('Error loading character:', error);
-    notFound();
+    console.error('Error loading character with ID:', id, error);
+    
+    // Si es un error de "not found", mostrar 404
+    if (error instanceof Error && error.message.includes('not found')) {
+      notFound();
+    }
+    
+    // Para otros errores, mostrar página de error genérica
+    throw error; // Next.js manejará esto con error.tsx
   }
 }

@@ -12,6 +12,8 @@ import { API_ENDPOINTS } from '@/constants';
 class RickAndMortyService {
   private async fetchWithErrorHandling<T>(url: string, options?: RequestInit): Promise<T> {
     try {
+      console.log('Fetching URL:', url); // Debug log
+      
       const response = await fetch(url, {
         headers: {
           'Content-Type': 'application/json',
@@ -19,14 +21,28 @@ class RickAndMortyService {
         ...options,
       });
 
+      console.log('Response status:', response.status); // Debug log
+
       if (!response.ok) {
+        if (response.status === 404) {
+          throw new Error(`Character not found`);
+        }
         throw new Error(`HTTP error! status: ${response.status}`);
       }
 
-      return await response.json();
+      const data = await response.json();
+      console.log('Response data:', data); // Debug log
+      return data;
     } catch (error) {
       console.error('API Error:', error);
-      throw new Error(error instanceof Error ? error.message : 'Unknown API error');
+      
+      // Si es un error de red o parsing
+      if (error instanceof TypeError) {
+        throw new Error('Network error - please check your internet connection');
+      }
+      
+      // Re-throw otros errores con el mensaje original
+      throw error;
     }
   }
 
@@ -47,10 +63,36 @@ class RickAndMortyService {
    */
   async getCharacterById(id: number | string): Promise<Character> {
     const url = API_ENDPOINTS.CHARACTER_BY_ID(id);
-    return this.fetchWithErrorHandling<Character>(url, {
-      // Para ISR con revalidación
-      next: { revalidate: 60 * 60 * 24 * 10 }, // 10 días
-    });
+    console.log('Fetching character by ID:', id, 'URL:', url);
+    
+    try {
+      const response = await fetch(url, {
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        // Configuración ISR simplificada
+        next: { 
+          revalidate: 60 * 60 * 24 * 10, // 10 días
+          tags: [`character-${id}`] 
+        },
+      });
+
+      console.log('Response status:', response.status);
+
+      if (!response.ok) {
+        if (response.status === 404) {
+          throw new Error(`Character with ID ${id} not found`);
+        }
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const data = await response.json();
+      console.log('Character data received:', data.name);
+      return data;
+    } catch (error) {
+      console.error('Error in getCharacterById:', error);
+      throw error;
+    }
   }
 
   /**
@@ -58,15 +100,24 @@ class RickAndMortyService {
    */
   async getCharacterByName(name: string): Promise<Character> {
     const url = `${API_ENDPOINTS.CHARACTERS_SEARCH}?name=${encodeURIComponent(name)}`;
-    const response = await this.fetchWithErrorHandling<CharacterResponse>(url, {
-      next: { revalidate: 60 * 60 * 24 * 10 }, // 10 días
+    const response = await fetch(url, {
+      next: { 
+        revalidate: 60 * 60 * 24 * 10, // 10 días
+        tags: [`character-name-${name.toLowerCase()}`] 
+      },
     });
     
-    if (response.results.length === 0) {
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    
+    const data = await response.json() as CharacterResponse;
+    
+    if (data.results.length === 0) {
       throw new Error(`Character with name "${name}" not found`);
     }
     
-    return response.results[0];
+    return data.results[0];
   }
 
   /**

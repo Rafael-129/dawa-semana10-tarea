@@ -6,29 +6,37 @@ import { CharacterDetail } from '@/components/character';
 import { generateCharacterMetadata } from '@/utils';
 import { StaticNameParams } from '@/types';
 
-// Configuración ISR - Revalidación cada 10 días
-export const revalidate = 60 * 60 * 24 * 10; // 10 días en segundos
-
-// Generar rutas estáticas para todos los nombres de personajes
+// Generar rutas estáticas para nombres populares
 export async function generateStaticParams(): Promise<StaticNameParams[]> {
   try {
-    const characterNames = await rickAndMortyService.getAllCharacterNames();
-    
-    // Limitar a los primeros 50 nombres para el build inicial
+    // Generar solo algunos nombres populares para el build inicial
     // Los demás se generarán bajo demanda con ISR
-    return characterNames.slice(0, 50).map((name) => ({
+    const popularNames = [
+      'rick sanchez',
+      'morty smith', 
+      'summer smith',
+      'beth smith',
+      'jerry smith'
+    ];
+    
+    return popularNames.map((name) => ({
       name: encodeURIComponent(name.toLowerCase()),
     }));
   } catch (error) {
     console.error('Error generating static params for names:', error);
-    return [];
+    // Retornar al menos algunos parámetros básicos
+    return [
+      { name: encodeURIComponent('rick sanchez') },
+      { name: encodeURIComponent('morty smith') },
+    ];
   }
 }
 
 // Generar metadatos dinámicos
-export async function generateMetadata({ params }: { params: { name: string } }): Promise<Metadata> {
+export async function generateMetadata({ params }: { params: Promise<{ name: string }> }): Promise<Metadata> {
   try {
-    const decodedName = decodeURIComponent(params.name);
+    const { name } = await params;
+    const decodedName = decodeURIComponent(name);
     const character = await rickAndMortyService.getCharacterByName(decodedName);
     return generateCharacterMetadata(character);
   } catch (error) {
@@ -39,9 +47,10 @@ export async function generateMetadata({ params }: { params: { name: string } })
   }
 }
 
-export default async function CharacterByNamePage({ params }: { params: { name: string } }) {
+export default async function CharacterByNamePage({ params }: { params: Promise<{ name: string }> }) {
   try {
-    const decodedName = decodeURIComponent(params.name);
+    const { name } = await params;
+    const decodedName = decodeURIComponent(name);
     const character = await rickAndMortyService.getCharacterByName(decodedName);
 
     return (

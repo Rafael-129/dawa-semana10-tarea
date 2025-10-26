@@ -20,7 +20,6 @@ export default function SearchPage() {
   const [lastSearchFilters, setLastSearchFilters] = useState<SearchFilters>({});
 
   const handleSearch = useCallback(async (filters: SearchFilters, page: number = 1) => {
-    console.log('🎯 HandleSearch llamado con:', filters, 'página:', page);
     setLoading(true);
     setError(null);
 
@@ -30,11 +29,8 @@ export default function SearchPage() {
         value !== undefined && value !== ''
       );
 
-      console.log('🔎 Filtros activos:', hasActiveFilters);
-
       if (!hasActiveFilters) {
         // Si no hay filtros, limpiar resultados
-        console.log('🧹 Limpiando resultados - sin filtros activos');
         setCharacters([]);
         setPagination({ currentPage: 1, totalPages: 1, totalResults: 0 });
         setLastSearchFilters({});
@@ -43,11 +39,8 @@ export default function SearchPage() {
       }
 
       const searchFilters = { ...filters, page };
-      console.log('📡 Realizando búsqueda con:', searchFilters);
-      
       const response: CharacterResponse = await rickAndMortyService.searchCharacters(searchFilters);
       
-      console.log('🎉 Respuesta recibida:', response);
       setCharacters(response.results);
       setPagination({
         currentPage: page,
@@ -56,12 +49,11 @@ export default function SearchPage() {
       });
       setLastSearchFilters(filters);
     } catch (err) {
-      console.error('💥 Search error:', err);
+      console.error('Search error:', err);
       setError(err instanceof Error ? err.message : 'Error en la búsqueda');
       setCharacters([]);
       setPagination({ currentPage: 1, totalPages: 1, totalResults: 0 });
     } finally {
-      console.log('🏁 Finalizando búsqueda, setLoading(false)');
       setLoading(false);
     }
   }, []);
@@ -69,6 +61,11 @@ export default function SearchPage() {
   const handlePageChange = useCallback((page: number) => {
     handleSearch(lastSearchFilters, page);
   }, [lastSearchFilters, handleSearch]);
+
+  // Función memoizada específica para el SearchForm
+  const handleFormSearch = useCallback((filters: SearchFilters) => {
+    handleSearch(filters, 1);
+  }, [handleSearch]);
 
   const hasSearched = Object.values(lastSearchFilters).some(value => 
     value !== undefined && value !== ''
@@ -97,7 +94,7 @@ export default function SearchPage() {
       </div>
 
       {/* Search Form */}
-      <SearchForm onSearch={(filters) => handleSearch(filters, 1)} loading={loading} />
+      <SearchForm onSearch={handleFormSearch} loading={loading} />
 
       {/* Results Section */}
       <div className="mt-8">

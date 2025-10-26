@@ -125,8 +125,6 @@ class RickAndMortyService {
    * Sin cache para búsquedas en tiempo real
    */
   async searchCharacters(filters: SearchFilters): Promise<CharacterResponse> {
-    console.log('🔍 Iniciando búsqueda con filtros:', filters);
-    
     const searchParams = new URLSearchParams();
     
     if (filters.name) searchParams.append('name', filters.name);
@@ -137,19 +135,11 @@ class RickAndMortyService {
     if (filters.page) searchParams.append('page', filters.page.toString());
 
     const url = `${API_ENDPOINTS.CHARACTERS_SEARCH}?${searchParams.toString()}`;
-    console.log('🌐 URL de búsqueda:', url);
     
-    try {
-      const result = await this.fetchWithErrorHandling<CharacterResponse>(url, {
-        // Sin cache para búsquedas en tiempo real
-        cache: 'no-store',
-      });
-      console.log('✅ Búsqueda exitosa:', result.results.length, 'personajes encontrados');
-      return result;
-    } catch (error) {
-      console.error('❌ Error en búsqueda:', error);
-      throw error;
-    }
+    return this.fetchWithErrorHandling<CharacterResponse>(url, {
+      // Sin cache para búsquedas en tiempo real
+      cache: 'no-store',
+    });
   }
 
   /**

@@ -21,8 +21,6 @@ export function SearchForm({ onSearch, loading = false }: SearchFormProps) {
   const debounceTimeout = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
-    console.log('🔄 SearchForm useEffect triggered, filtros:', filters);
-    
     // Limpiar timeout anterior
     if (debounceTimeout.current) {
       clearTimeout(debounceTimeout.current);
@@ -33,16 +31,10 @@ export function SearchForm({ onSearch, loading = false }: SearchFormProps) {
       value !== undefined && value !== ''
     );
     
-    console.log('🎯 Filtros activos en SearchForm:', hasActiveFilters);
-    
     if (hasActiveFilters) {
-      console.log('⏰ Iniciando debounce de 300ms...');
       debounceTimeout.current = setTimeout(() => {
-        console.log('🚀 Ejecutando onSearch después de debounce');
         onSearch(filters);
       }, 300);
-    } else {
-      console.log('🧹 No hay filtros activos, no buscar');
     }
 
     // Cleanup
@@ -51,7 +43,7 @@ export function SearchForm({ onSearch, loading = false }: SearchFormProps) {
         clearTimeout(debounceTimeout.current);
       }
     };
-  }, [filters, onSearch]);
+  }, [filters, onSearch]); // ✅ onSearch ahora está memoizado
 
   const handleInputChange = (field: keyof SearchFilters, value: string) => {
     setFilters(prev => ({
